@@ -1,0 +1,41 @@
+{
+  "name": "openclaw-ollama-decision",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Local tev1 Decision provider for OpenClaw via Ollama System One",
+  "engines": {
+    "node": ">=22"
+  },
+  "openclaw": {
+    "extensions": [
+      "./index.js"
+    ]
+  },
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "smoke": "node smoke.js"
+  },
+  "files": [
+    "index.js",
+    "provider.js",
+    "openclaw.plugin.json",
+    "README.md",
+    "LICENSE"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/brightbrothers/openclaw-ollama-decision.git"
+  },
+  "homepage": "https://github.com/brightbrothers/openclaw-ollama-decision#readme",
+  "bugs": {
+    "url": "https://github.com/brightbrothers/openclaw-ollama-decision/issues"
+  },
+  "keywords": [
+    "openclaw",
+    "ollama",
+    "tev1",
+    "decision-models",
+    "systemone"
+  ]
+}
