@@ -1,1 +1,63 @@
-{"id":"ollama-decision","name":"Ollama Decision","contracts":{"decisionProviders":["ollama-decision"]},"activation":{"onStartup":false},"decisionModels":[{"provider":"ollama-decision","id":"tev1:0.8b","name":"Tev1 0.8B (local Ollama)","capabilities":{"questionTypes":["boolean","choice","score"],"maxQuestions":64,"maxChoiceAlternatives":26,"maxScoreLevels":26,"requiresBooleanCriteria":false,"confidence":"provider-specific"}}],"configSchema":{"type":"object","additionalProperties":false,"properties":{"baseURL":{"type":"string","default":"http://127.0.0.1:11434","description":"Loopback Ollama HTTP origin"}}}}
+{
+  "id": "ollama-decision",
+  "name": "Ollama Decision",
+  "contracts": {
+    "decisionProviders": [
+      "ollama-decision"
+    ]
+  },
+  "activation": {
+    "onStartup": false
+  },
+  "decisionModels": [
+    {
+      "provider": "ollama-decision",
+      "id": "tev1:0.8b",
+      "name": "Tev1 0.8B (local Ollama)",
+      "capabilities": {
+        "questionTypes": [
+          "boolean",
+          "choice",
+          "score"
+        ],
+        "maxQuestions": 64,
+        "maxChoiceAlternatives": 26,
+        "maxScoreLevels": 26,
+        "requiresBooleanCriteria": false,
+        "confidence": "provider-specific"
+      }
+    },
+    {
+      "provider": "ollama-decision",
+      "id": "tev1:4b",
+      "name": "Tev1 4B (local Ollama)",
+      "capabilities": {
+        "questionTypes": [
+          "boolean",
+          "choice",
+          "score"
+        ],
+        "maxQuestions": 64,
+        "maxChoiceAlternatives": 26,
+        "maxScoreLevels": 26,
+        "requiresBooleanCriteria": false,
+        "confidence": "provider-specific"
+      }
+    }
+  ],
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "baseURL": {
+        "type": "string",
+        "default": "http://127.0.0.1:11434",
+        "description": "Loopback Ollama HTTP origin"
+      }
+    }
+  },
+  "description": "Local AI classification and decisions for OpenClaw via Ollama: Tev1 0.8B and 4B; Boolean, Choice and Score.",
+  "categories": [
+    "developer-tools"
+  ]
+}

@@ -106,7 +106,7 @@ export function createProvider(config = {}, fetchImpl = globalThis.fetch) {
       check(Number.isFinite(context.deadlineMonotonicMs));
       const remaining = context.deadlineMonotonicMs - performance.now();
       if (remaining <= 0) throw new DOMException('Decision deadline exceeded', 'TimeoutError');
-      if (context.model !== 'tev1:0.8b') return unavailable('unsupported-input');
+      if (!['tev1:0.8b', 'tev1:4b'].includes(context.model)) return unavailable('unsupported-input');
       let body;
       try { body = compile(batch, context.model); } catch { return unavailable('unsupported-input'); }
       const controller = new AbortController();

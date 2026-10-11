@@ -1,0 +1,38 @@
+{
+  "date": "2026-10-11",
+  "path": "OpenClaw decision_evaluate (installed v0.1.0)",
+  "state": "Checkout is failing for all customers.",
+  "status": "ok",
+  "result": {
+    "model": "tev1:0.8b",
+    "answers": {
+      "escalate": {
+        "type": "boolean",
+        "probabilityTrue": 0.8887648173755832
+      },
+      "route": {
+        "type": "choice",
+        "choice": "support",
+        "probabilities": {
+          "support": 0.7621309707048192,
+          "billing": 0.23786902929518097
+        },
+        "confidence": 0.20852144558441377
+      },
+      "urgency": {
+        "type": "score",
+        "score": 1.9095707824356793,
+        "probabilities": [
+          0.0024082742763663896,
+          0.08561266901158757,
+          0.9119790567120459
+        ],
+        "confidence": 0.7187574401673605
+      }
+    },
+    "usage": {
+      "inputTokens": 812,
+      "outputTokens": 4
+    }
+  }
+}
