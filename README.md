@@ -26,7 +26,7 @@ It is an edited walkthrough, not a real-time recording.
 - Node.js 22 or newer.
 - OpenClaw with `api.registerDecisionProvider`, Decision provider contract v1,
   and manifest `decisionModels` support. Integration was verified on OpenClaw
-  **2026.9.8** (runtime loading, model catalog and a real `decision_evaluate` batch).
+  **2026.9.8** and **2026.10.4** (see verification scope below).
   Older releases and every future release are not independently verified.
 - Ollama **0.35 or newer**, with **POST `/v1/systemone`** and at least one
   supported model. A working `/api/chat` endpoint alone is insufficient.
@@ -40,11 +40,33 @@ Actual checks performed on 2026-10-11 used Ollama **0.40.2** and Node **24.18.0*
 | `tev1:4b` | Passed locally with v0.2.0 | Declared in manifest; 4B host/picker integration not independently rerun |
 
 These are connectivity and response-shape checks, not an accuracy or speed benchmark.
-The package declares the exact historically verified host API version, 2026.9.8.
-Other host versions require their own compatibility check.
+
+### OpenClaw 2026.10.4 support (v0.2.1)
+
+The provider honors the optional host-owned `context.isAdmissible()` callback
+synchronously immediately before dispatch to Ollama. Revoked admission prevents
+network I/O; thrown authority assertions propagate unchanged. Hosts and explicit
+calls without this callback retain their previous behavior. This supports the
+new automatic-consumer transport contract; consumers still require their own
+OpenClaw settings and harness support.
+
+On 2026-10-17, the installed v0.1.0 provider passed a real `decision_evaluate`
+request on OpenClaw 2026.10.4 with Tev1 0.8B. Release v0.2.1 adds admission
+regression tests and a direct adapter smoke on the same host environment.
+Automatic-consumer end-to-end behavior and 4B host/picker integration were not
+independently rerun.
+
+Package build metadata targets 2026.10.4. The minimum compatible plugin API
+remains 2026.9.8; other host versions require their own compatibility check.
 This is not a generic Ollama chat provider.
 
 ## Install
+
+Install the published package from npm:
+
+```sh
+openclaw plugins install openclaw-ollama-decision
+```
 
 Start your local Ollama service, then download the model if needed:
 
@@ -54,7 +76,7 @@ ollama pull tev1:0.8b
 ollama pull tev1:4b
 ```
 
-Clone and review the plugin, run the tests, then install from the local checkout:
+Alternatively, clone and review the plugin, run the tests, then install from the local checkout:
 
 ```sh
 git clone https://github.com/brightbrothers/openclaw-ollama-decision.git
@@ -160,8 +182,7 @@ prefiltering is not provided by this plugin.
 
 The smoke command is a runnable synthetic incident-triage example: it assesses
 whether a checkout outage needs escalation, routes it to a team, and scores its
-operational impact. It sends synthetic text only. See [promotion drafts and
-release material](docs/promotion.md) for prepared, unpublished copy.
+operational impact. It sends synthetic text only. See the [reproducible example](docs/example.md) and [changelog](CHANGELOG.md).
 
 ## Troubleshooting
 

@@ -114,21 +114,27 @@ export function createProvider(config = {}, fetchImpl = globalThis.fetch) {
       context.signal.addEventListener('abort', abort, { once: true });
       const timer = setTimeout(() => controller.abort(new DOMException('Decision deadline exceeded', 'TimeoutError')), Math.min(remaining, 2147483647));
       try {
-        const response = await fetchImpl(new URL('/v1/systemone', url), { method: 'POST', headers: { 'content-type': 'application/json' }, body, signal: controller.signal, redirect: 'error' });
+        // Keep host authority assertions outside transport error handling.
+        // No awaited preparation may occur between admission and dispatch.
         controller.signal.throwIfAborted();
-        if (!response.ok) {
-          await response.body?.cancel().catch(() => {});
-          return unavailable(response.status === 401 || response.status === 403 ? 'authentication' : response.status === 429 ? 'rate-limited' : [400, 404, 413, 422].includes(response.status) ? 'unsupported-input' : 'transport');
+        if (context.isAdmissible && !context.isAdmissible()) return unavailable('transport');
+        try {
+          const response = await fetchImpl(new URL('/v1/systemone', url), { method: 'POST', headers: { 'content-type': 'application/json' }, body, signal: controller.signal, redirect: 'error' });
+          controller.signal.throwIfAborted();
+          if (!response.ok) {
+            await response.body?.cancel().catch(() => {});
+            return unavailable(response.status === 401 || response.status === 403 ? 'authentication' : response.status === 429 ? 'rate-limited' : [400, 404, 413, 422].includes(response.status) ? 'unsupported-input' : 'transport');
+          }
+          let result;
+          try { result = decode(await readBounded(response, controller.signal), batch); }
+          catch { controller.signal.throwIfAborted(); return unavailable('invalid-response'); }
+          controller.signal.throwIfAborted();
+          if (performance.now() >= context.deadlineMonotonicMs) { controller.abort(new DOMException('Decision deadline exceeded', 'TimeoutError')); controller.signal.throwIfAborted(); }
+          return result;
+        } catch {
+          controller.signal.throwIfAborted();
+          return unavailable('transport');
         }
-        let result;
-        try { result = decode(await readBounded(response, controller.signal), batch); }
-        catch { controller.signal.throwIfAborted(); return unavailable('invalid-response'); }
-        controller.signal.throwIfAborted();
-        if (performance.now() >= context.deadlineMonotonicMs) { controller.abort(new DOMException('Decision deadline exceeded', 'TimeoutError')); controller.signal.throwIfAborted(); }
-        return result;
-      } catch {
-        controller.signal.throwIfAborted();
-        return unavailable('transport');
       } finally { clearTimeout(timer); context.signal.removeEventListener('abort', abort); }
     },
   };

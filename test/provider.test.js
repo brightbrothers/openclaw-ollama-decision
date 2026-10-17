@@ -42,3 +42,25 @@ test('score map requires exact canonical index keys', async () => { for (const p
 test('rounded distributions and fractional scores preserved', async () => { const d = valid(); d.answers.urgency.probabilities = {'0':.333,'1':.333,'2':.333}; const out = await createProvider({},mock(d)).evaluate(batch,ctx()); assert.equal(out.result.answers.urgency.score,1.8); assert.deepEqual(out.result.answers.urgency.probabilities,[.333,.333,.333]); });
 test('structured criteria compiled as JSON text; null score rejected', async () => { const input = structuredClone(batch); input.questions.escalate.criteria.true = { includes:['outage'] }; const p = createProvider({},async (_,init) => { assert.equal(JSON.parse(init.body).questions.escalate.criteria.true,'{"includes":["outage"]}'); return Response.json(valid()); }); assert.equal((await p.evaluate(input,ctx())).status,'ok'); input.questions.urgency.criteria[0] = null; assert.equal((await p.evaluate(input,ctx())).reason,'unsupported-input'); });
 test('prototype-like labels remain own data keys', async () => { const input = {state:'example',questions:JSON.parse('{"__proto__":{"type":"choice","criteria":{"__proto__":"first","constructor":"second"}}}')}; const data = JSON.parse('{"model":"tev1:0.8b","answers":{"__proto__":{"type":"choice","choice":"__proto__","probabilities":{"__proto__":0.8,"constructor":0.2}}}}'); const out = await createProvider({},mock(data)).evaluate(input,ctx()); assert.equal(out.status,'ok'); assert.equal(out.result.answers.__proto__.probabilities.__proto__,.8); });
+
+test('host admission is checked immediately before dispatch', async () => {
+ const events = [];
+ const p = createProvider({}, async () => { events.push('fetch'); return Response.json(valid()); });
+ const out = await p.evaluate(batch, { ...ctx(), isAdmissible() { events.push('admit'); return true; } });
+ assert.equal(out.status, 'ok');
+ assert.deepEqual(events, ['admit', 'fetch']);
+});
+test('revoked host admission prevents network dispatch', async () => {
+ let calls = 0;
+ const p = createProvider({}, async () => { calls++; return Response.json(valid()); });
+ const out = await p.evaluate(batch, { ...ctx(), isAdmissible: () => false });
+ assert.equal(out.status, 'unavailable');
+ assert.equal(calls, 0);
+});
+test('host authority assertions propagate unchanged and never dispatch', async () => {
+ let calls = 0;
+ const failure = new Error('Consumer authority closed');
+ const p = createProvider({}, async () => { calls++; return Response.json(valid()); });
+ await assert.rejects(p.evaluate(batch, { ...ctx(), isAdmissible() { throw failure; } }), error => error === failure);
+ assert.equal(calls, 0);
+});

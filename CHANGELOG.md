@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.2.1 — 2026-10-17
+
+- Support OpenClaw 2026.10.4 automatic-consumer admission at final Ollama dispatch.
+- Prevent network requests when host admission is revoked; propagate host authority assertions unchanged.
+- Preserve explicit Decision calls and older hosts without the optional callback.
+- Update build metadata and compatibility documentation; retain minimum plugin API 2026.9.8.
+- Add regression tests for allowed, revoked and throwing admission checks.
+- No model changes; Tev1 0.8B and 4B remain supported.
+
 ## 0.2.0 — 2026-10-11
 
 - Add exact `tev1:4b` provider and manifest support alongside `tev1:0.8b`.

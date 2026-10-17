@@ -1,6 +1,6 @@
 {
   "name": "openclaw-ollama-decision",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "type": "module",
   "description": "Local AI classification and decisions for OpenClaw via Ollama: Tev1 0.8B and 4B; Boolean, Choice and Score.",
   "engines": {
@@ -14,7 +14,7 @@
       "pluginApi": "2026.9.8"
     },
     "build": {
-      "openclawVersion": "2026.9.8"
+      "openclawVersion": "2026.10.4"
     }
   },
   "scripts": {
